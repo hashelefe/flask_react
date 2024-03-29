@@ -6,7 +6,7 @@ const Register = () => {
     const [name, setName] = useState<string>("")
     const [pwd, setPwd] = useState<string>("")
 
-    const base_url = "http://localhost:5000/"
+    const base_url = "https://flask-back-cj5j.onrender.com/"
 
     const register_user = async () => {
         try{

@@ -5,7 +5,7 @@ import httpClient from '../httpClient'
 const Login = () => {
     const [email, setEmail] = useState<string>("")
     const [pwd, setPwd] = useState<string>("")
-    const base_url = "http://localhost:5000/"
+    const base_url = "https://flask-back-cj5j.onrender.com/"
 
     const login_user = async () => {
         try{
@@ -13,8 +13,7 @@ const Login = () => {
                 email,
                 password: pwd,
             })
-            
-            window.location.href = "/"
+            localStorage.setItem("accessToken",resp.data.token)
 
         } catch(error: any) {
             console.log(error)

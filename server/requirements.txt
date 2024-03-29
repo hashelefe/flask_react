@@ -5,5 +5,7 @@ flask-session
 flask-cors
 python-dotenv
 redis
-
+gunicorn
+pyjwt
+datetime
 # To install all dependencies needed in this api, use in server directory in terminal 'pip install -r ./requirements.txt'

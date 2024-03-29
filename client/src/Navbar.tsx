@@ -16,17 +16,22 @@ export default function Navbar() {
 
   useEffect(() => {
     (async () => {
-      try {
-        const resp = await httpClient.get("//localhost:5000/@me");
-        setUser(resp.data);
-      } catch (error) {
-        console.log("Not authenticated");
-      }
+      if(localStorage.getItem("accessToken"))
+       {
+         try {
+           const resp = await httpClient.get("//localhost:5000/@me", {
+             headers: {"Authorization": `Bearer ${localStorage.getItem("accessToken")}`}
+           });
+           setUser(resp.data);
+         } catch (error) {
+           console.log("Not authenticated");
+         }
+       }
     })();
   }, []);
 
   const logoutUser = async () => {
-    await httpClient.post("//localhost:5000/logout");
+    localStorage.removeItem("accessToken")
     window.location.href = "/";
   };
 

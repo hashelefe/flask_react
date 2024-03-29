@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import httpClient from '../httpClient';
 import { Score } from '../types';
 
-const base_url = "http://localhost:5000/"
+const base_url = "https://flask-back-cj5j.onrender.com/"
 
 const Scores: React.FC = () => {
   const [scores, setScores] = useState<Score[]>([]);

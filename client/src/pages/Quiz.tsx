@@ -10,19 +10,24 @@ const QuizComponent: React.FC = () => {
   const [isFetched, setIsFetched] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  
+    const base_url = "https://flask-back-cj5j.onrender.com/";
 
   useEffect(() => {
     (async () => {
-      try {
-        const resp = await httpClient.get("//localhost:5000/@me");
-        setUser(resp.data);
-      } catch (error) {
-        console.log("Not authenticated");
-      }
+      if(localStorage.getItem("accessToken"))
+       {
+         try {
+           const resp = await httpClient.get(base_url + "@me", {
+             headers: {"Authorization": `Bearer ${localStorage.getItem("accessToken")}`}
+           });
+           setUser(resp.data);
+         } catch (error) {
+           console.log("Not authenticated");
+         }
+       }
     })();
   }, []);
-
-  const base_url = "http://localhost:5000/";
 
   const fetch_questions = async () => {
     try {

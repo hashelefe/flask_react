@@ -1,30 +1,50 @@
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, make_response
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
-from flask_session import Session
 from config import ApplicationConfig
 from models import db, User, Question, Quiz, Score
+import jwt
+import datetime
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../client/build')
 app.config.from_object(ApplicationConfig)
 
 
 bcrypt = Bcrypt(app)
-cors = CORS(app, supports_credentials=True)
-server_session = Session(app)
+cors = CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})
 db.init_app(app)
 with app.app_context():
     db.create_all()
 
+def generate_token(username):
+    expiration_date = datetime.datetime.now() + datetime.timedelta(hours=1)
+    payload = {'email': username, 'exp': expiration_date}
+    token = jwt.encode(payload, app.config['SECRET_KEY'], algorithm='HS256')
+    return token
+
+def decode_token(token):
+    try:
+        payload = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])
+        return payload['email']
+    except jwt.ExpiredSignatureError:
+        return 'Signature expired. Please log in again.'
+    except jwt.InvalidTokenError:
+        return 'Invalid token. Please log in again.'
+    
+def get_auth_user():
+    auth = request.headers["Authorization"].split(' ')
+    if len(auth) != 2:
+        return jsonify({"error": "401 - Unauthorized"})
+    token = auth[1]
+    email = decode_token(token)
+    user = User.query.filter_by(email=email).first()
+    return user
+
 
 @app.get("/@me")
 def get_current_user():
-    user_id = session.get("user_id")
-
-    if not user_id:
-        return jsonify({"error": "Unauthorized"}), 401
-    
-    user = User.query.filter_by(id=user_id).first()
+    user = get_auth_user()
+    print(user)
     return jsonify({
         "id": user.id,
         "email": user.email,
@@ -81,11 +101,10 @@ def create_and_store_questions():
         "question": question,       
     })
 
-@app.post("/login")
-def login_user():
+@app.post('/login')
+def login():
     email = request.json["email"]
     password = request.json["password"]
-
     user = User.query.filter_by(email=email).first()
 
     if user is None:
@@ -94,17 +113,11 @@ def login_user():
     if not bcrypt.check_password_hash(user.password, password):
         return jsonify({"error": "Unauthorized"}), 401
     
-    session["user_id"] = user.id
+    token = generate_token(email)
+    response = make_response(jsonify({"token":token}))
+    response.set_cookie('token', token, httponly=True)
+    return response
 
-    return jsonify({
-        "id": user.id,
-        "email": user.email,       
-    })
-
-@app.post("/logout")
-def logout_user():
-    session.pop("user_id")
-    return "200"
 
 @app.get('/api/questions')
 def get_questions():
