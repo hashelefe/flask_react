@@ -8,10 +8,10 @@ const LandingPage: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      if(localStorage.getItem("accessToken"))
+      if(localStorage.getItem("accessToken") != null)
        {
          try {
-           const resp = await httpClient.get("//localhost:5000/@me", {
+           const resp = await httpClient.get("https://flask-back-cj5j.onrender.com/@me", {
              headers: {"Authorization": `Bearer ${localStorage.getItem("accessToken")}`}
            });
            setUser(resp.data);

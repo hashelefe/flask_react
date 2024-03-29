@@ -7,7 +7,8 @@ const Login = () => {
     const [pwd, setPwd] = useState<string>("")
     const base_url = "https://flask-back-cj5j.onrender.com/"
 
-    const login_user = async () => {
+    const login_user = async (e:any) => {
+        e.preventDefault()
         try{
             const resp = await httpClient.post(base_url+"login", {
                 email,
@@ -58,7 +59,7 @@ const Login = () => {
                 <div className="mt-6">
                     <button 
                         type="button" 
-                        onClick={() => login_user()}
+                        onClick={(e) => login_user(e)}
                         className="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50">
                         Zaloguj
                     </button>

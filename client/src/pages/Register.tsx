@@ -8,14 +8,14 @@ const Register = () => {
 
     const base_url = "https://flask-back-cj5j.onrender.com/"
 
-    const register_user = async () => {
+    const register_user = async (e:any) => {
+        e.preventDefault()
         try{
             const resp = await httpClient.post(base_url+"register", {
                 email,
                 password: pwd,
                 name
             })
-            window.location.href = "/"
             console.log(resp)
         } catch(error: any) {
             console.log(error)
@@ -84,7 +84,7 @@ const Register = () => {
 
             <div className="mt-6">
                 <button 
-                    onClick={() => register_user()}
+                    onClick={(e) => register_user(e)}
                     className="w-full px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50">
                     Zarejestruj
                 </button>

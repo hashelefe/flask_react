@@ -15,7 +15,7 @@ const QuizComponent: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      if(localStorage.getItem("accessToken"))
+      if(localStorage.getItem("accessToken") != null) {
        {
          try {
            const resp = await httpClient.get(base_url + "@me", {
@@ -25,13 +25,13 @@ const QuizComponent: React.FC = () => {
          } catch (error) {
            console.log("Not authenticated");
          }
-       }
+       }}
     })();
   }, []);
 
   const fetch_questions = async () => {
     try {
-      const response = await httpClient.get(base_url + '/api/questions/1');
+      const response = await httpClient.get(base_url + '/api/questions/2');
       const jsonData = await response.data; // Parse JSON data
       const processedQuestions = jsonData.map((question: any) => {
         const answersList = question.answers.split(',');
@@ -42,6 +42,7 @@ const QuizComponent: React.FC = () => {
     } catch (error) {
       console.error("Error fetching questions:", error);
     }
+ 
   };
 
   const handleAnswerSelect = (answerIndex: number) => {
@@ -115,7 +116,7 @@ const QuizComponent: React.FC = () => {
           Start quiz!
         </button> 
       </div>}
-      {isFetched && (
+      {isFetched && user && (
         <div>
           {gameOver ? (
             <div>
